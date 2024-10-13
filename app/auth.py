@@ -50,18 +50,21 @@ def login():
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
             return jsonify({"message": "Token is missing"}), 401
         try:
+            token = auth_header.split(" ")[1]
             data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
-            user = User.query.get(data['user_id'])
+            current_user = User.query.get(data['user_id'])
+            if not current_user:
+                raise jwt.InvalidTokenError
         except jwt.ExpiredSignatureError:
             return jsonify({"message": "Token has expired"}), 401
-        except jwt.InvalidTokenError:
+        except (jwt.InvalidTokenError, IndexError):
             return jsonify({"message": "Invalid token"}), 401
 
-        return f(user, *args, **kwargs)
+        return f(current_user, *args, **kwargs)
     return decorated
 
 @auth_bp.route('/protected', methods=['GET'])
