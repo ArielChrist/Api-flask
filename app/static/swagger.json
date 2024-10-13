@@ -1,0 +1,629 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "API Flask Ariel Christ Ngato",
+      "description": "API RESTful avec authentification JWT, autiristation, gestion des utilisateurs, des posts et des tags.",
+      "version": "1.0.0"
+    },
+    "host": "localhost:5000",
+    "basePath": "/",
+    "schemes": [
+      "http"
+    ],
+    "securityDefinitions": {
+      "Bearer": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    },
+    "paths": {
+      "/auth/register": {
+        "post": {
+          "summary": "Enregistrer un nouvel utilisateur",
+          "description": "Crée un nouvel utilisateur avec un rôle d'utilisateur par défaut.",
+          "parameters": [
+            {
+              "in": "body",
+              "name": "user",
+              "description": "Détails de l'utilisateur à enregistrer",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/UserRegister"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Utilisateur enregistré avec succès."
+            },
+            "400": {
+              "description": "Erreur de validation ou l'utilisateur existe déjà."
+            }
+          }
+        }
+      },
+      "/auth/login": {
+        "post": {
+          "summary": "Connexion d'un utilisateur",
+          "description": "Connecte un utilisateur en validant ses informations et renvoie un token JWT.",
+          "parameters": [
+            {
+              "in": "body",
+              "name": "credentials",
+              "description": "Identifiants de l'utilisateur",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/UserLogin"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Connexion réussie, JWT renvoyé.",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Identifiants invalides."
+            }
+          }
+        }
+      },
+      "/auth/admin": {
+        "get": {
+          "summary": "Route d'administration",
+          "description": "Route accessible uniquement aux administrateurs.",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Accès autorisé pour les administrateurs."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé (non administrateur)."
+            }
+          }
+        }
+      },
+      "/users": {
+        "post": {
+          "summary": "Créer un nouvel utilisateur",
+          "description": "Crée un nouvel utilisateur (accessible uniquement aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "user",
+              "description": "Détails de l'utilisateur à créer",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Utilisateur créé avec succès."
+            },
+            "400": {
+              "description": "Erreur de validation."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé (non administrateur)."
+            }
+          }
+        },
+        "get": {
+          "summary": "Obtenir tous les utilisateurs",
+          "description": "Récupère la liste de tous les utilisateurs (accessible uniquement aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Liste des utilisateurs récupérée avec succès."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé (non administrateur)."
+            }
+          }
+        }
+      },
+      "/users/{id}": {
+        "get": {
+          "summary": "Obtenir un utilisateur spécifique",
+          "description": "Récupère les détails d'un utilisateur spécifique (accessible uniquement aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "ID de l'utilisateur"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Détails de l'utilisateur récupérés avec succès."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé (non administrateur)."
+            },
+            "404": {
+              "description": "Utilisateur non trouvé."
+            }
+          }
+        },
+        "put": {
+          "summary": "Mettre à jour un utilisateur",
+          "description": "Met à jour les détails d'un utilisateur spécifique (accessible uniquement aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "ID de l'utilisateur"
+            },
+            {
+              "in": "body",
+              "name": "user",
+              "description": "Détails de l'utilisateur à mettre à jour",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Utilisateur mis à jour avec succès."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé (non administrateur)."
+            },
+            "404": {
+              "description": "Utilisateur non trouvé."
+            }
+          }
+        },
+        "delete": {
+          "summary": "Supprimer un utilisateur",
+          "description": "Supprime un utilisateur spécifique (accessible uniquement aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "ID de l'utilisateur"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Utilisateur supprimé avec succès."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé (non administrateur)."
+            },
+            "404": {
+              "description": "Utilisateur non trouvé."
+            }
+          }
+        }
+      },
+      "/posts": {
+        "post": {
+          "summary": "Créer un nouveau post",
+          "description": "Crée un nouveau post (accessible aux utilisateurs authentifiés).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "post",
+              "description": "Détails du post à créer",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Post"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Post créé avec succès."
+            },
+            "400": {
+              "description": "Erreur de validation."
+            },
+            "401": {
+              "description": "Non autorisé."
+            }
+          }
+        },
+        "get": {
+          "summary": "Obtenir tous les posts",
+          "description": "Récupère la liste de tous les posts (accessible aux utilisateurs authentifiés).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Liste des posts récupérée avec succès."
+            },
+            "401": {
+              "description": "Non autorisé."
+            }
+          }
+        }
+      },
+      "/posts/{id}": {
+        "get": {
+          "summary": "Obtenir un post spécifique",
+          "description": "Récupère les détails d'un post spécifique (accessible aux utilisateurs authentifiés).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "ID du post"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Détails du post récupérés avec succès."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "404": {
+              "description": "Post non trouvé."
+            }
+          }
+        },
+        "put": {
+          "summary": "Mettre à jour un post",
+          "description": "Met à jour les détails d'un post spécifique (accessible à l'auteur ou aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "ID du post"
+            },
+            {
+              "in": "body",
+              "name": "post",
+              "description": "Détails du post à mettre à jour",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Post"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Post mis à jour avec succès."
+            },
+            "400": {
+              "description": "Erreur de validation."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé."
+            },
+            "404": {
+              "description": "Post non trouvé."
+            }
+          }
+        },
+        "delete": {
+          "summary": "Supprimer un post",
+          "description": "Supprime un post spécifique (accessible à l'auteur ou aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "ID du post"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Post supprimé avec succès."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé."
+            },
+            "404": {
+              "description": "Post non trouvé."
+            }
+          }
+        }
+      },
+      "/tags": {
+        "post": {
+          "summary": "Créer un nouveau tag",
+          "description": "Crée un nouveau tag (accessible uniquement aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "tag",
+              "description": "Détails du tag à créer",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Tag"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Tag créé avec succès."
+            },
+            "400": {
+              "description": "Erreur de validation."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé (non administrateur)."
+            }
+          }
+        },
+        "get": {
+          "summary": "Obtenir tous les tags",
+          "description": "Récupère la liste de tous les tags (accessible aux utilisateurs authentifiés).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Liste des tags récupérée avec succès."
+            },
+            "401": {
+              "description": "Non autorisé."
+            }
+          }
+        }
+      },
+      "/tags/{id}": {
+        "put": {
+          "summary": "Mettre à jour un tag",
+          "description": "Met à jour les détails d'un tag spécifique (accessible uniquement aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "ID du tag"
+            },
+            {
+              "in": "body",
+              "name": "tag",
+              "description": "Détails du tag à mettre à jour",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Tag"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Tag mis à jour avec succès."
+            },
+            "400": {
+              "description": "Erreur de validation."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé (non administrateur)."
+            },
+            "404": {
+              "description": "Tag non trouvé."
+            }
+          }
+        },
+        "delete": {
+          "summary": "Supprimer un tag",
+          "description": "Supprime un tag spécifique (accessible uniquement aux administrateurs).",
+          "security": [
+            {
+              "Bearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "integer",
+              "description": "ID du tag"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Tag supprimé avec succès."
+            },
+            "401": {
+              "description": "Non autorisé."
+            },
+            "403": {
+              "description": "Accès refusé (non administrateur)."
+            },
+            "404": {
+              "description": "Tag non trouvé."
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "UserRegister": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "is_admin": {
+            "type": "boolean"
+          }
+        },
+        "required": ["username", "email", "password"]
+      },
+      "UserLogin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "is_admin": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["title", "content"]
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      }
+    }
+  }
