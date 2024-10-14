@@ -5,10 +5,10 @@
       "description": "API RESTful avec authentification JWT, autiristation, gestion des utilisateurs, des posts et des tags.",
       "version": "1.0.0"
     },
-    "host": "localhost:5000",
+    "host": "api-flask-qtax.onrender.com",
     "basePath": "/",
     "schemes": [
-      "http"
+      "https"
     ],
     "securityDefinitions": {
       "Bearer": {
