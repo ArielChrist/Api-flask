@@ -54,7 +54,10 @@ def token_required(f):
         auth_header = request.headers.get('Authorization')
         if auth_header:
             try:
-                token = auth_header.split(" ")[1]
+                if ' ' in auth_header:
+                    token = auth_header.split(" ")[1]
+                else:
+                    token = auth_header
             except IndexError:
                 return jsonify({"message": "Token is missing"}), 401
         if not token:
