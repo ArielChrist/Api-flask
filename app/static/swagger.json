@@ -8,7 +8,7 @@
     "host": "api-flask-qtax.onrender.com",
     "basePath": "/",
     "schemes": [
-      "http"
+      "https"
     ],
     "securityDefinitions": {
       "Bearer": {
